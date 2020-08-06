@@ -5,6 +5,7 @@ from django.contrib.auth.models import User  # Required to assign User as a borr
 
 
 
+
 class Genre(models.Model):
     """Model representing a book genre."""
     name = models.CharField(max_length=200, help_text='Enter a book genre (e.g. Science Fiction)')
@@ -35,6 +36,12 @@ class Book(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a detail record for this book."""
         return reverse('book-detail', args=[str(self.id)])
+
+    def display_genre(self):
+        """Create a string for the Genre. This is required to display genre in Admin."""
+        return ', '.join(genre.name for genre in self.genre.all()[:3])
+        
+    display_genre.short_description = 'Genre'
 
 
 class BookInstance(models.Model):
@@ -85,3 +92,7 @@ class Author(models.Model):
 class Language(models.Model):
     pass
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> Django Tutorial Part 4: Admin site
