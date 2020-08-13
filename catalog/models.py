@@ -92,7 +92,4 @@ class Author(models.Model):
 class Language(models.Model):
     pass
 
-<<<<<<< HEAD
 
-=======
->>>>>>> Django Tutorial Part 4: Admin site
