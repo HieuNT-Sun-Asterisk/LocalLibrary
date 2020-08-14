@@ -11,7 +11,6 @@ class Genre(models.Model):
         """String for representing the Model object."""
         return self.name
 
-
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
     title = models.CharField(max_length=100)
@@ -26,7 +25,8 @@ class Book(models.Model):
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
     # Genre class has already been defined so we can specify the object above.
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book')
-    
+    language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True)
+
     def __str__(self):
         """String for representing the Model object."""
         return self.title
@@ -73,7 +73,7 @@ class Author(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField(null=True, blank=True)
-    date_of_death = models.DateField('Died', null=True, blank=True)
+    date_of_death = models.DateField('died', null=True, blank=True)
 
     class Meta:
         ordering = ['last_name', 'first_name']
@@ -89,8 +89,17 @@ class Author(models.Model):
     class Meta:
         ordering = ['last_name']
 
+
+
 class Language(models.Model):
-    pass
+    """Model representing a Language (e.g. English, French, Japanese, etc.)"""
+    name = models.CharField(max_length=200,
+                            help_text="Enter the book's natural language (e.g. English, French, Japanese etc.)",
+                            null = True )
+
+    def __str__(self):
+        """String for representing the Model object (in Admin site etc.)"""
+        return self.name
 
 
 @property
@@ -98,3 +107,4 @@ def is_overdue(self):
     if self.due_back and date.today() > self.due_back:
         return True
     return False
+    

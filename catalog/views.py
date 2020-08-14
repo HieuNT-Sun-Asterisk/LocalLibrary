@@ -10,7 +10,7 @@ import datetime
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
-
+from django.urls import reverse
 from catalog.models import Author
 
 class AuthorCreate(PermissionRequiredMixin, CreateView):
@@ -104,24 +104,21 @@ def index(request):
 
 class BookListView(LoginRequiredMixin,generic.ListView):
     model = Book
-    paginate_by = 1
+    paginate_by = 10
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
-    def get_queryset(self):
-        return Book.objects.all()[:5] # Get 5 books containing the title war
-
+    
 class BookDetailView(LoginRequiredMixin,generic.DetailView):
     model = Book
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
     
 
-class AuthorListView(PermissionRequiredMixin,generic.ListView):
-    permission_required = 'catalog.can_mark_returned'
-    def get_queryset(self):
-        return Author.objects.all()[:5]
+class AuthorListView(generic.ListView):
+    model = Author
+    paginate_by = 10
 
-class AuthorDetailView(generic.DetailView):
+class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
     model = Author
 
 def book_detail_view(request, pk):
@@ -145,3 +142,5 @@ class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
     
     def get_queryset(self):
         return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+
+        
