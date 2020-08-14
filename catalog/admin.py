@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Author, Genre, Book, BookInstance
+from .models import Author, Genre, Book, BookInstance, Language
 
 # Define the admin class
 class AuthorAdmin(admin.ModelAdmin):
@@ -35,3 +35,5 @@ class BookInstanceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Genre)
+admin.site.register(Language)
+
