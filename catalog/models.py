@@ -2,8 +2,7 @@ from django.db import models
 import uuid  # Required for unique book instances
 from datetime import date
 from django.contrib.auth.models import User  # Required to assign User as a borrower
-
-
+from django.urls import reverse
 
 
 class Genre(models.Model):
@@ -66,9 +65,6 @@ class BookInstance(models.Model):
         help_text='Book availability',
     )
 
-
-
-
 class Author(models.Model):
     """Model representing an author."""
     first_name = models.CharField(max_length=100)
@@ -86,9 +82,9 @@ class Author(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
-
-
+        
+    class Meta:
+        ordering = ['last_name']
 
 class Language(models.Model):
     pass
-
