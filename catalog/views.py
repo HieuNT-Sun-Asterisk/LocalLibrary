@@ -2,7 +2,8 @@ from django.shortcuts import render
 from catalog.models import Book, Author, BookInstance, Genre
 from django.views import generic
 from django.shortcuts import get_object_or_404
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
 def index(request):
@@ -31,19 +32,23 @@ def index(request):
     }
     return render(request, 'index.html', context=context)
 
-class BookListView(generic.ListView):
+
+class BookListView(LoginRequiredMixin,generic.ListView):
     model = Book
     paginate_by = 1
-    
+    login_url = '/accounts/login/'
+    redirect_field_name = 'redirect_to'
     def get_queryset(self):
         return Book.objects.all()[:5] # Get 5 books containing the title war
 
-class BookDetailView(generic.DetailView):
+class BookDetailView(LoginRequiredMixin,generic.DetailView):
     model = Book
-    # pass
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    
 
-
-class AuthorListView(generic.ListView):
+class AuthorListView(PermissionRequiredMixin,generic.ListView):
+    permission_required = 'catalog.can_mark_returned'
     def get_queryset(self):
         return Author.objects.all()[:5]
 
@@ -53,3 +58,21 @@ class AuthorDetailView(generic.DetailView):
 def book_detail_view(request, pk):
     book = get_object_or_404(Book, pk=pk)
     return render(request, 'catalog/book_detail.html', context={'book': book})
+
+class AllLoanedBooksListView(PermissionRequiredMixin,generic.ListView):
+    """Generic class-based view listing books on loan """
+    permission_required = 'catalog.can_mark_returned'
+    model = BookInstance
+    template_name ='catalog/bookinstance_list_borrowed_all.html'
+    paginate_by = 10
+    def get_queryset(self):
+        return BookInstance.objects.all().order_by('due_back')
+
+class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
+    """Generic class-based view listing books on loan to current user."""
+    model = BookInstance
+    template_name ='catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
