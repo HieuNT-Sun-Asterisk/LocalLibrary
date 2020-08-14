@@ -8,7 +8,12 @@
   <p><strong>ISBN:</strong> {{ book.isbn }}</p> 
   <p><strong>Language:</strong> {{ book.language }}</p>  
   <p><strong>Genre:</strong> {{ book.genre.all|join:", " }}</p>  
-
+  <p>
+    {% if perms.catalog.can_mark_returned %} 
+      <a href="{% url 'book_update' book.id %}"> Edit </a> - 
+      <a href="{% url 'book_delete' book.id %}"> Delete </a>  
+    {% endif %}   
+  </p>
   <div style="margin-left:20px;margin-top:20px">
     <h4>Copies</h4>
 
